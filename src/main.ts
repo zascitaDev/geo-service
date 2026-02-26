@@ -12,7 +12,8 @@ async function bootstrap() {
       url: `mqtts://${process.env.MQTT_HOST}:${process.env.MQTT_PORT_TLS}`,
       username: process.env.MQTT_USER,
       password: process.env.MQTT_PASS,
-      ca: fs.readFileSync('./mosquitto/certs/mosquitto.crt'),
+      ca: fs.readFileSync('/app/certs/mosquitto.crt'),
+      rejectUnauthorized: false, // 🔥 importante con autofirmado
     },
   });
 
