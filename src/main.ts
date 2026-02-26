@@ -1,7 +1,9 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import * as fs from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,10 +16,6 @@ async function bootstrap() {
       password: process.env.MQTT_PASSWORD,
     },
   });
-
-  console.log('MQTT_USER:', process.env.MQTT_USER);
-  console.log('MQTT_PASSWORD:', process.env.MQTT_PASSWORD);
-  console.log('MQTT_HOST:', process.env.MQTT_HOST);
 
   await app.startAllMicroservices();
   await app.listen(3000);
