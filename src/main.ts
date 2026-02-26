@@ -8,9 +8,9 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.MQTT,
     options: {
-      url: 'mqtt://api-dev.zascita.com:1883',
-      username: 'repartidorUser',
-      password: 'Zacita123.',
+      url: 'mqtt://mosquitto:1883',
+      username: 'mosquitto',
+      password: 'zascita123',
     },
   });
 
