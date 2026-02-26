@@ -11,7 +11,7 @@ async function bootstrap() {
     options: {
       url: `mqtt://${process.env.MQTT_HOST}:1883`,
       username: process.env.MQTT_USER,
-      password: process.env.MQTT_PASS,
+      password: process.env.MQTT_PASSWORD,
     },
   });
 
