@@ -11,9 +11,10 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.MQTT,
     options: {
-      url: `mqtt://${process.env.MQTT_HOST}:${process.env.MQTT_PORT}`,
+      url: `mqtt://mosquitto:1883`, // o tcp://mosquitto:1883
       username: process.env.MQTT_USER,
       password: process.env.MQTT_PASSWORD,
+      clientId: 'geo-service-' + Math.random().toString(16).substr(2, 8),
     },
   });
 
