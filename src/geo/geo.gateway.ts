@@ -5,7 +5,6 @@ import { Server } from 'socket.io';
   cors: true,
 })
 export class GeoGateway {
-
   @WebSocketServer()
   server: Server;
 

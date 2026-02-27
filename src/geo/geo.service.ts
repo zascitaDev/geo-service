@@ -4,10 +4,9 @@ import { GeoGateway } from './geo.gateway';
 
 @Injectable()
 export class GeoService {
-
   constructor(private readonly geoGateway: GeoGateway) {}
 
-  @EventPattern('location/update')
+  @EventPattern('usuarios/+/ubicacion')
   handleLocationUpdate(@Payload() data: any) {
     console.log('Ubicación recibida:', data);
 
