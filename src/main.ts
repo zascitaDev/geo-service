@@ -16,17 +16,15 @@ async function bootstrap() {
       username: process.env.MQTT_USER,
       password: process.env.MQTT_PASSWORD,
 
-      clean: false,              // ⭐ IMPORTANTE
+      clean: false, // ⭐ IMPORTANTE
       reconnectPeriod: 5000,
       connectTimeout: 4000,
       keepalive: 60,
 
-      resubscribe: true,         // ⭐ CLAVE
-      queueQoSZero: true,        // ⭐ evita cortes
+      resubscribe: true, // ⭐ CLAVE
+      queueQoSZero: true, // ⭐ evita cortes
 
-      clientId:
-        'geo-service-' +
-        Math.random().toString(16).substring(2, 10),
+      clientId: 'geo-service-' + Math.random().toString(16).substring(2, 10),
     },
   });
 

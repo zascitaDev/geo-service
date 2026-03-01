@@ -5,10 +5,7 @@ import { MqttListener } from './mqtt.listener';
 import { GeoGateway } from './geo.gateway';
 
 @Module({
-  controllers: [
-    AppController,
-    MqttListener,
-  ],
-  providers: [AppService,GeoGateway]
+  controllers: [AppController, MqttListener],
+  providers: [AppService, GeoGateway],
 })
 export class AppModule {}

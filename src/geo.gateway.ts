@@ -11,7 +11,6 @@ import { Server } from 'socket.io';
   },
 })
 export class GeoGateway implements OnGatewayConnection {
-
   @WebSocketServer()
   server: Server;
 
