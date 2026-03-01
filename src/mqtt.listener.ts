@@ -4,10 +4,17 @@ import { GeoGateway } from './geo.gateway';
 
 @Controller()
 export class MqttListener {
-  private usuariosActivos = new Map<string, number>();
+  private usuarios = new Map<
+    string,
+    {
+      lastHeartbeat: number;
+      conectadoEn?: number;
+      online: boolean;
+    }
+  >();
 
   constructor(private geoGateway: GeoGateway) {
-    this.iniciarMonitorInactividad();
+    this.iniciarMonitorPresencia();
   }
 
   // ================================
@@ -25,58 +32,86 @@ export class MqttListener {
       timestamp: data.timestamp || Date.now(),
     };
 
-    console.log('📍 UBICACION RECIBIDA:', payload);
+    console.log('📍 UBICACION:', payload);
 
-    // Guardar último ping
-    this.usuariosActivos.set(userId, Date.now());
-
-    // Emitir al websocket
     this.geoGateway.server.emit('ubicacion', payload);
   }
 
   // ================================
-  // STATUS ONLINE
+  // STATUS INICIAL
   // ================================
   @EventPattern('usuarios/+/status')
   handleStatus(@Payload() data: any, @Ctx() context: MqttContext) {
     const topic = context.getTopic();
     const userId = topic.split('/')[1];
 
-    const payload = {
-      usuario: userId,
-      status: data.status,
+    console.log('🟢 STATUS ONLINE:', userId);
+
+    this.usuarios.set(userId, {
+      lastHeartbeat: Date.now(),
       conectadoEn: data.timestamp || Date.now(),
-    };
+      online: true,
+    });
 
-    console.log('🟢 STATUS:', payload);
-
-    // Marcar activo
-    this.usuariosActivos.set(userId, Date.now());
-
-    this.geoGateway.server.emit('status', payload);
+    this.geoGateway.server.emit('status', {
+      usuario: userId,
+      status: 'online',
+      conectadoEn: data.timestamp,
+    });
   }
 
   // ================================
-  // DETECTOR DE INACTIVOS
+  // HEARTBEAT
   // ================================
-  private iniciarMonitorInactividad() {
+  @EventPattern('usuarios/+/heartbeat')
+  handleHeartbeat(@Payload() data: any, @Ctx() context: MqttContext) {
+    const topic = context.getTopic();
+    const userId = topic.split('/')[1];
+
+    const user = this.usuarios.get(userId);
+
+    if (!user) {
+      // reconexión automática
+      this.usuarios.set(userId, {
+        lastHeartbeat: Date.now(),
+        conectadoEn: Date.now(),
+        online: true,
+      });
+
+      this.geoGateway.server.emit('status', {
+        usuario: userId,
+        status: 'online',
+        conectadoEn: Date.now(),
+      });
+
+      return;
+    }
+
+    user.lastHeartbeat = Date.now();
+    user.online = true;
+  }
+
+  // ================================
+  // MONITOR DE PRESENCIA
+  // ================================
+  private iniciarMonitorPresencia() {
     setInterval(() => {
       const ahora = Date.now();
 
-      this.usuariosActivos.forEach((lastSeen, userId) => {
-        const diff = ahora - lastSeen;
+      this.usuarios.forEach((data, userId) => {
+        const diff = ahora - data.lastHeartbeat;
 
-        // 15 segundos sin enviar ubicación = offline
-        if (diff > 15000) {
-          console.log('🔴 Usuario inactivo:', userId);
+        // 20 segundos sin heartbeat
+        if (diff > 20000 && data.online) {
+          console.log('🔴 OFFLINE:', userId);
+
+          data.online = false;
 
           this.geoGateway.server.emit('status', {
             usuario: userId,
             status: 'offline',
-            lastSeen: lastSeen,
+            lastSeen: data.lastHeartbeat,
           });
-
-          this.usuariosActivos.delete(userId);
         }
       });
     }, 5000);
