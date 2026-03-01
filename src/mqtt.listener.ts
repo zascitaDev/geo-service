@@ -1,3 +1,11 @@
+import { Controller } from '@nestjs/common';
+import {
+  EventPattern,
+  Payload,
+  Ctx,
+  MqttContext,
+} from '@nestjs/microservices';
+
 import { GeoGateway } from './geo.gateway';
 
 @Controller()
@@ -20,9 +28,9 @@ export class MqttListener {
       lng: data.lng,
     };
 
-    console.log('📍 UBICACION RECIBIDA', payload);
+    console.log('📍 UBICACION RECIBIDA:', payload);
 
-    // ⭐ EMITE AL MAPA EN TIEMPO REAL
+    // enviar al websocket
     this.geoGateway.emitirUbicacion(payload);
   }
 }
