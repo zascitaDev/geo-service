@@ -4,10 +4,8 @@ import { GeoGateway } from './geo.gateway';
 
 @Injectable()
 export class GeoService {
-  constructor(private readonly geoGateway: GeoGateway) {
-    console.log('🚀 GeoService iniciado');
-  }
-  
+  constructor(private readonly geoGateway: GeoGateway) {}
+
   /**
    * ✅ IMPORTANTE:
    * NestJS NO soporta usuarios/# correctamente
