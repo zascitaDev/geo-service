@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
-import { EventPattern, Payload, Ctx, MqttContext } from '@nestjs/microservices';
+import { GeoGateway } from './geo.gateway';
 
 @Controller()
 export class MqttListener {
+
+  constructor(private geoGateway: GeoGateway) {}
 
   @EventPattern('usuarios/+/ubicacion')
   handleLocation(
@@ -11,18 +12,17 @@ export class MqttListener {
   ) {
 
     const topic = context.getTopic();
+    const userId = topic.split('/')[1];
 
-    // obtener userId del topic
-    const parts = topic.split('/');
-    const userId = parts[1];
+    const payload = {
+      usuario: userId,
+      lat: data.lat,
+      lng: data.lng,
+    };
 
-    console.log('======================');
-    console.log('📍 UBICACION RECIBIDA');
-    console.log('Usuario:', userId);
-    console.log('Lat:', data.lat);
-    console.log('Lng:', data.lng);
-    console.log('======================');
+    console.log('📍 UBICACION RECIBIDA', payload);
 
-    // aquí después guardarás en DB
+    // ⭐ EMITE AL MAPA EN TIEMPO REAL
+    this.geoGateway.emitirUbicacion(payload);
   }
 }
