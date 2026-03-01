@@ -13,17 +13,17 @@ async function bootstrap() {
     options: {
       url: `mqtt://${process.env.MQTT_HOST}:${process.env.MQTT_PORT}`,
 
-      // ✅ AUTH (correcto)
       username: process.env.MQTT_USER,
       password: process.env.MQTT_PASSWORD,
 
-      // ⭐ CLAVES PARA ESTABILIDAD
-      clean: true,
+      clean: false,              // ⭐ IMPORTANTE
       reconnectPeriod: 5000,
       connectTimeout: 4000,
       keepalive: 60,
 
-      // ⭐ evita conflictos de sesión
+      resubscribe: true,         // ⭐ CLAVE
+      queueQoSZero: true,        // ⭐ evita cortes
+
       clientId:
         'geo-service-' +
         Math.random().toString(16).substring(2, 10),
