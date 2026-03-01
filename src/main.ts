@@ -12,14 +12,25 @@ async function bootstrap() {
     transport: Transport.MQTT,
     options: {
       url: `mqtt://${process.env.MQTT_HOST}:${process.env.MQTT_PORT}`,
+
+      // ✅ AUTH (correcto)
       username: process.env.MQTT_USER,
       password: process.env.MQTT_PASSWORD,
-      clientId: 'geo-service-' + Math.random().toString(16).slice(2),
+
+      // ⭐ CLAVES PARA ESTABILIDAD
+      clean: true,
+      reconnectPeriod: 5000,
+      connectTimeout: 4000,
+      keepalive: 60,
+
+      // ⭐ evita conflictos de sesión
+      clientId:
+        'geo-service-' +
+        Math.random().toString(16).substring(2, 10),
     },
   });
 
   await app.startAllMicroservices();
-
   await app.listen(3000);
 
   console.log('🚀 Geo Service HTTP corriendo en 3000');
