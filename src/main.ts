@@ -3,12 +3,11 @@ dotenv.config();
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Microservicio MQTT
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.MQTT,
     options: {
@@ -22,7 +21,8 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   await app.listen(3000);
-  console.log('🚀 Geo Service HTTP corriendo en puerto 3000');
+
+  console.log('🚀 Geo Service HTTP corriendo en 3000');
 }
 
 bootstrap();

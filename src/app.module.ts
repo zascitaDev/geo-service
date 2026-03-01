@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GeoModule } from './geo/geo.module';
+import { MqttListener } from './mqtt.listener';
 
 @Module({
-  imports: [GeoModule],
-  controllers: [AppController],
+  controllers: [
+    AppController,
+    MqttListener, // ⭐ ESTE FALTABA
+  ],
   providers: [AppService],
 })
 export class AppModule {}
